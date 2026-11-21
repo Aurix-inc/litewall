@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', sans-serif; }
+  body {
+    margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%);
+    color: #f8fafc;
+  }
+  .card {
+    background: rgba(30, 41, 59, 0.55); border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(12px); padding: 40px 56px; border-radius: 24px; text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+  .mode { font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #38bdf8; margin-bottom: 8px; }
+  .timer { font-size: 96px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 10px 0 28px; }
+  .controls { display: flex; gap: 14px; justify-content: center; }
+  button {
+    background: #2563eb; color: white; border: none; padding: 12px 26px; font-size: 15px;
+    font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.15s;
+  }
+  button:hover { background: #3b82f6; }
+  button.secondary { background: rgba(148, 163, 184, 0.2); }
+  button.secondary:hover { background: rgba(148, 163, 184, 0.35); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mode" id="modeLabel">FOCUS SESSION</div>
+    <div class="timer" id="display">25:00</div>
+    <div class="controls">
+      <button id="toggleBtn" onclick="toggleTimer()">Start</button>
+      <button class="secondary" onclick="resetTimer()">Reset</button>
+      <button class="secondary" onclick="switchMode()">Switch Mode</button>
+    </div>
+  </div>
+
+<script>
+  let isFocus = true;
+  let secondsLeft = 25 * 60;
+  let interval = null;
+
+  function render() {
+    const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+    const s = String(secondsLeft % 60).padStart(2, '0');
+    document.getElementById('display').textContent = `${m}:${s}`;
+  }
+
+  function toggleTimer() {
+    const btn = document.getElementById('toggleBtn');
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+      btn.textContent = 'Start';
+    } else {
+      btn.textContent = 'Pause';
+      interval = setInterval(() => {
+        if (secondsLeft > 0) {
+          secondsLeft--;
+          render();
+        } else {
+          clearInterval(interval);
+          interval = null;
+          btn.textContent = 'Start';
+          switchMode();
+        }
+      }, 1000);
+    }
+  }
+
+  function resetTimer() {
+    if (interval) { clearInterval(interval); interval = null; }
+    document.getElementById('toggleBtn').textContent = 'Start';
+    secondsLeft = (isFocus ? 25 : 5) * 60;
+    render();
+  }
+
+  function switchMode() {
+    isFocus = !isFocus;
+    document.getElementById('modeLabel').textContent = isFocus ? 'FOCUS SESSION' : 'SHORT BREAK';
+    document.getElementById('modeLabel').style.color = isFocus ? '#38bdf8' : '#34d399';
+    resetTimer();
+  }
+</script>
+</body>
+</html>

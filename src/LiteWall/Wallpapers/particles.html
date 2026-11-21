@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="margin:0;overflow:hidden;background:#0b0f19;">
+<canvas id="c"></canvas>
+<script>
+const c = document.getElementById('c'), ctx = c.getContext('2d');
+c.width = window.innerWidth; c.height = window.innerHeight;
+const nodes = Array.from({length: 55}, () => ({
+    x: Math.random() * c.width, y: Math.random() * c.height,
+    vx: (Math.random() - 0.5) * 0.8, vy: (Math.random() - 0.5) * 0.8
+}));
+
+function loop() {
+    requestAnimationFrame(loop);
+    if (window.__paused) return;
+    ctx.clearRect(0, 0, c.width, c.height);
+    for (let i = 0; i < nodes.length; i++) {
+        let a = nodes[i];
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0 || a.x > c.width) a.vx *= -1;
+        if (a.y < 0 || a.y > c.height) a.vy *= -1;
+        ctx.fillStyle = '#60a5fa';
+        ctx.beginPath(); ctx.arc(a.x, a.y, 2, 0, Math.PI * 2); ctx.fill();
+        for (let j = i + 1; j < nodes.length; j++) {
+            let b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+            if (d < 120) {
+                ctx.strokeStyle = `rgba(96,165,250,${1 - d/120})`;
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            }
+        }
+    }
+}
+loop();
+</script>
+</body>
+</html>
